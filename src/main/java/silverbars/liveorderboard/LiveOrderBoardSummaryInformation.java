@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
 
@@ -20,8 +21,6 @@ public class LiveOrderBoardSummaryInformation {
 
     /**
      * Creates a new instance of summary information based on a ordered list of entries
-     * @param buyEntries
-     * @param sellEntries
      */
     LiveOrderBoardSummaryInformation(@Nonnull Map<Double, Entry> buyEntries, @Nonnull Map<Double, Entry> sellEntries) {
         // making state of the model immutable to avoid confusion and unexpected behaviour
@@ -51,6 +50,29 @@ public class LiveOrderBoardSummaryInformation {
                 .add("BUY", buyEntries().entrySet())
                 .add("SELL", sellEntries().entrySet())
                 .toString();
+    }
+
+    /**
+     * returns an ordered array of buy order descriptions; one description per each price entry
+     */
+    @Nonnull
+    public String[] buyOrdersDescription() {
+        return description(buyEntries);
+    }
+
+    /**
+     * returns an ordered array of sell order descriptions; one description per each price entry
+     */
+    @Nonnull
+    public String[] sellOrdersDescription() {
+        return description(sellEntries);
+    }
+
+    private String[] description(Map<Double, Entry> entries) {
+        return entries.values().stream()
+                .map(Object::toString)
+                .collect(Collectors.toList())
+                .toArray(new String[0]);
     }
 
     /**
@@ -89,7 +111,7 @@ public class LiveOrderBoardSummaryInformation {
 
             sb.append(" // ");
 
-            sb.append(Joiner.on(" + ").join(orders));
+            sb.append(Joiner.on(" + ").join(orders.stream().map(Order::getOrderId).sorted().collect(Collectors.toList())));
 
             return sb.toString();
         }
