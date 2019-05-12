@@ -9,18 +9,18 @@ public class LiveOrderBoard {
     /** a function that translates live order board state into summary information */
     @Nonnull
     private final SummaryInformationFunction summaryInformationFunction;
-
+    @Nonnull
     private final LiveOrderBoardState liveOrderBoardState;
 
     public LiveOrderBoard() {
-        this(new SummaryInformationFunction(), new LiveOrderBoardState());
+        this(new LiveOrderBoardState(), new SummaryInformationFunction());
     }
 
     /**
      * Allow a summary information function to be replaced with a mock during testing
      */
     @VisibleForTesting
-    LiveOrderBoard(@Nonnull SummaryInformationFunction summaryInformationFunction, LiveOrderBoardState liveOrderBoardState) {
+    LiveOrderBoard(@Nonnull LiveOrderBoardState liveOrderBoardState, @Nonnull SummaryInformationFunction summaryInformationFunction) {
         this.summaryInformationFunction = summaryInformationFunction;
         this.liveOrderBoardState = liveOrderBoardState;
     }
