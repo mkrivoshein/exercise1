@@ -3,12 +3,17 @@ package silverbars.liveorderboard;
 import silverbars.liveorderboard.order.Order;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * A factory that translates a summary order board state into a summary information
@@ -41,18 +46,18 @@ class SummaryInformationFunction implements Function<LiveOrderBoardState, LiveOr
     }
 
 
-    private Map<Double, List<Order>> groupByPrice(@Nonnull Stream<Order> orders) {
-        return orders.collect(groupingBy(Order::getPrice));
+    private Map<Double, Set<Order>> groupByPrice(@Nonnull Stream<Order> orders) {
+        return orders.collect(groupingBy(Order::getPrice, toSet()));
     }
 
-    private SortedMap<Double, LiveOrderBoardSummaryInformation.Entry> summarize(Map<Double, List<Order>> orderData,
+    private SortedMap<Double, LiveOrderBoardSummaryInformation.Entry> summarize(Map<Double, Set<Order>> orderData,
                                                                                 Comparator<Double> keyOrder) {
         SortedMap<Double, LiveOrderBoardSummaryInformation.Entry> result = new TreeMap<>(keyOrder);
 
         orderData.forEach((price, orders) -> {
             // DoubleStream.sum() attempts to calculate a sum of doubles and retain precision
             double sum = orders.stream().mapToDouble(Order::getQuantity).sum();
-            result.put(price, new LiveOrderBoardSummaryInformation.Entry(sum, price));
+            result.put(price, new LiveOrderBoardSummaryInformation.Entry(sum, price, orders));
         });
 
         return result;

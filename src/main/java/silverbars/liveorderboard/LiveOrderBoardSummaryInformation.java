@@ -1,10 +1,14 @@
 package silverbars.liveorderboard;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import silverbars.liveorderboard.order.Order;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
 
@@ -55,10 +59,17 @@ public class LiveOrderBoardSummaryInformation {
     public static final class Entry {
         private final double quantity;
         private final double price;
+        private final Set<Order> orders;
 
-        public Entry(double quantity, double price) {
+        public Entry(double quantity, double price, Order... orders) {
+            this(quantity, price, ImmutableSet.copyOf(orders));
+        }
+
+        public Entry(double quantity, double price, Set<Order> orders) {
             this.quantity = quantity;
             this.price = price;
+            // ensure it is immutable
+            this.orders = ImmutableSet.copyOf(orders);
         }
 
         @Override
@@ -74,7 +85,11 @@ public class LiveOrderBoardSummaryInformation {
                 sb.append(price);
             }
 
-            sb.append(" GBP"); // £ 
+            sb.append(" GBP"); // £
+
+            sb.append(" // ");
+
+            sb.append(Joiner.on(" + ").join(orders));
 
             return sb.toString();
         }
