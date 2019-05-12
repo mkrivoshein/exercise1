@@ -1,5 +1,7 @@
 package silverbars.liveorderboard;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.annotation.Nonnull;
 import java.util.List;
 
@@ -11,7 +13,16 @@ public class LiveOrderBoardSummaryInformation {
      * Creates a new instance of summary information based on a ordered list of entries
      */
     LiveOrderBoardSummaryInformation(@Nonnull List<Entry> entries) {
-        this.entries = entries;
+        // making state of the model immutable to avoid confusion and unexpected behaviour
+        this.entries = ImmutableList.copyOf(entries);
+    }
+
+    /**
+     * Get a read-only list of entries.
+     */
+    @Nonnull
+    public List<Entry> entries() {
+        return entries;
     }
 
     @Override

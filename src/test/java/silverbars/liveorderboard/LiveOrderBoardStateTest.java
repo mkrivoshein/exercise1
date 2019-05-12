@@ -1,11 +1,13 @@
 package silverbars.liveorderboard;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.Test;
 import silverbars.liveorderboard.order.Order;
 import silverbars.liveorderboard.order.OrderSide;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -106,4 +108,18 @@ public class LiveOrderBoardStateTest {
         assertThat(streamContents, is(ImmutableList.of()));
     }
 
+    @Test
+    public void streamNonEmptyLiveOrderBoardState() {
+        Order mockOrder1 = mock(Order.class);
+        Order mockOrder2 = mock(Order.class);
+        Order mockOrder3 = mock(Order.class);
+
+        liveOrderBoardState.registerOrder(mockOrder1);
+        liveOrderBoardState.registerOrder(mockOrder2);
+        liveOrderBoardState.registerOrder(mockOrder3);
+
+        Set<Order> streamContents = liveOrderBoardState.stream().collect(Collectors.toSet());
+
+        assertThat(streamContents, is(ImmutableSet.of(mockOrder1, mockOrder2, mockOrder3)));
+    }
 }
