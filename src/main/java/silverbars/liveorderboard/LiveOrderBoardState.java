@@ -33,6 +33,7 @@ public class LiveOrderBoardState {
         return liveOrders.remove(order);
     }
 
+    @Nonnull
     public Stream<Order> stream() {
         return liveOrders.stream();
     }
