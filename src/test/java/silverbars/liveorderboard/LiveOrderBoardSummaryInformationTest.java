@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 class LiveOrderBoardSummaryInformationTest {
     private LiveOrderBoard liveOrderBoard = new LiveOrderBoard();
+
     @Test
     public void emptySummaryInformation() {
         LiveOrderBoardSummaryInformation summaryInformation = liveOrderBoard.getSummaryInformation();

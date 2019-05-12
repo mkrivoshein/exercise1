@@ -10,16 +10,19 @@ public class LiveOrderBoard {
     @Nonnull
     private final SummaryInformationFunction summaryInformationFunction;
 
+    private final LiveOrderBoardState liveOrderBoardState;
+
     public LiveOrderBoard() {
-        this(new SummaryInformationFunction());
+        this(new SummaryInformationFunction(), new LiveOrderBoardState());
     }
 
     /**
      * Allow a summary information function to be replaced with a mock during testing
      */
     @VisibleForTesting
-    LiveOrderBoard(@Nonnull SummaryInformationFunction summaryInformationFunction) {
+    LiveOrderBoard(@Nonnull SummaryInformationFunction summaryInformationFunction, LiveOrderBoardState liveOrderBoardState) {
         this.summaryInformationFunction = summaryInformationFunction;
+        this.liveOrderBoardState = liveOrderBoardState;
     }
 
     /**
@@ -28,7 +31,7 @@ public class LiveOrderBoard {
      * @return true if an order was not registered before. This is modeled on <code>Set.add()</code> method
      */
     public boolean registerOrder(@Nonnull Order order) {
-        return true;
+        return liveOrderBoardState.registerOrder(order);
     }
 
     /**
@@ -37,7 +40,7 @@ public class LiveOrderBoard {
      * @return true if an order was removed from the live order board. This is modeled on <code>Set.remove()</code> method
      */
     public boolean cancelOrder(@Nonnull Order order) {
-        return true;
+        return liveOrderBoardState.cancelOrder(order);
     }
 
     /**
@@ -45,6 +48,6 @@ public class LiveOrderBoard {
      */
     @Nonnull
     public LiveOrderBoardSummaryInformation getSummaryInformation() {
-        return summaryInformationFunction.apply(new LiveOrderBoardState());
+        return summaryInformationFunction.apply(liveOrderBoardState);
     }
 }

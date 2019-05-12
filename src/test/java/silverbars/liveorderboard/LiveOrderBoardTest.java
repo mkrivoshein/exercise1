@@ -5,11 +5,12 @@ package silverbars.liveorderboard;
 
 import org.junit.jupiter.api.Test;
 import silverbars.liveorderboard.order.Order;
+import silverbars.liveorderboard.order.OrderSide;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assume.assumeThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,22 @@ public class LiveOrderBoardTest {
     }
 
     @Test
+    public void registerDuplicateOrder() {
+        // prepare
+        Order order1 = new Order("orderA", "user1", 3.5, 306.0, OrderSide.BUY);
+        Order order1Duplicate = new Order("orderA", "user1", 3.5, 306.0, OrderSide.BUY);
+
+        boolean order1Result = liveOrderBoard.registerOrder(order1);
+        assumeThat(order1Result, is(true));
+
+        // execute
+        boolean result = liveOrderBoard.registerOrder(order1Duplicate);
+
+        // verify
+        assertThat(result, is(false));
+    }
+
+    @Test
     public void cancelExistingOrder() {
         // prepare
         Order mockOrder = mock(Order.class);
@@ -44,12 +61,13 @@ public class LiveOrderBoardTest {
     @Test
     public void summaryInformation() {
         // prepare
+        LiveOrderBoardState liveOrderBoardState = mock(LiveOrderBoardState.class);
         LiveOrderBoardSummaryInformation summaryInformation = mock(LiveOrderBoardSummaryInformation.class);
 
         SummaryInformationFunction summaryInformationFunction = mock(SummaryInformationFunction.class);
-        when(summaryInformationFunction.apply(any(LiveOrderBoardState.class))).thenReturn(summaryInformation);
+        when(summaryInformationFunction.apply(liveOrderBoardState)).thenReturn(summaryInformation);
 
-        LiveOrderBoard liveOrderBoard = new LiveOrderBoard(summaryInformationFunction);
+        LiveOrderBoard liveOrderBoard = new LiveOrderBoard(summaryInformationFunction, liveOrderBoardState);
 
         // execute
         LiveOrderBoardSummaryInformation result = liveOrderBoard.getSummaryInformation();
