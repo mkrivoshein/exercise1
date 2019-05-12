@@ -50,6 +50,14 @@ public class Order {
         return orderSide;
     }
 
+    public boolean isBuy() {
+        return OrderSide.BUY.equals(orderSide);
+    }
+
+    public boolean isSell() {
+        return OrderSide.SELL.equals(orderSide);
+    }
+
     /**
      * For simplicity each and every field is considered important in establishing equality of two objects
      */
