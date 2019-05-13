@@ -102,10 +102,8 @@ public class LiveOrderBoardStateTest {
     }
 
     @Test
-    public void streamEmptyLiveOrderBoardState() {
-        List<Order> streamContents = liveOrderBoardState.stream().collect(Collectors.toList());
-
-        assertThat(streamContents, is(ImmutableList.of()));
+    public void emptyLiveOrderBoardState() {
+        assertThat(liveOrderBoardState.liveOrders(), is(ImmutableSet.of()));
     }
 
     @Test
@@ -118,8 +116,6 @@ public class LiveOrderBoardStateTest {
         liveOrderBoardState.registerOrder(mockOrder2);
         liveOrderBoardState.registerOrder(mockOrder3);
 
-        Set<Order> streamContents = liveOrderBoardState.stream().collect(Collectors.toSet());
-
-        assertThat(streamContents, is(ImmutableSet.of(mockOrder1, mockOrder2, mockOrder3)));
+        assertThat(liveOrderBoardState.liveOrders(), is(ImmutableSet.of(mockOrder1, mockOrder2, mockOrder3)));
     }
 }

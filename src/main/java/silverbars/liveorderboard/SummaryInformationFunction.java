@@ -40,7 +40,7 @@ class SummaryInformationFunction implements Function<LiveOrderBoardState, LiveOr
     private Map<Double, LiveOrderBoardSummaryInformation.Entry> generateEntries(LiveOrderBoardState state,
                                                                                 Predicate<Order> orderFilter,
                                                                                 Comparator<Double> priceSortingOrder) {
-        Stream<Order> orderStream = state.stream().filter(orderFilter);
+        Stream<Order> orderStream = state.liveOrders().stream().filter(orderFilter);
 
         return summarize(groupByPrice(orderStream), priceSortingOrder);
     }

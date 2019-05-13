@@ -1,5 +1,6 @@
 package silverbars.liveorderboard;
 
+import com.google.common.collect.ImmutableSet;
 import silverbars.liveorderboard.order.Order;
 
 import javax.annotation.Nonnull;
@@ -33,9 +34,13 @@ public class LiveOrderBoardState {
         return liveOrders.remove(order);
     }
 
+    /**
+     * Returns an immutable copy of the current set of live orders. Can be implemented differently if performance
+     * is a concern or it is assured that users of this method will not attempt to modify data.
+     */
     @Nonnull
-    public Stream<Order> stream() {
-        return liveOrders.stream();
+    public Set<Order> liveOrders() {
+        return ImmutableSet.copyOf(liveOrders);
     }
 
     @Override
