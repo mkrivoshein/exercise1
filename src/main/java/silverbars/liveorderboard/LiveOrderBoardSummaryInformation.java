@@ -32,7 +32,7 @@ public class LiveOrderBoardSummaryInformation {
      * Get a read-only list of BUY entries.
      */
     @Nonnull
-    public Map<Double, Set<Order>> buyEntries() {
+    public Map<Double, Set<Order>> buySummaryInformation() {
         return buyEntries;
     }
 
@@ -40,15 +40,15 @@ public class LiveOrderBoardSummaryInformation {
      * Get a read-only list of SELL entries.
      */
     @Nonnull
-    public Map<Double, Set<Order>> sellEntries() {
+    public Map<Double, Set<Order>> sellSummaryInformation() {
         return sellEntries;
     }
 
     @Override
     public String toString() {
         return toStringHelper(this)
-                .add("BUY", buyEntries().entrySet())
-                .add("SELL", sellEntries().entrySet())
+                .add("BUY", buySummaryInformation().entrySet())
+                .add("SELL", sellSummaryInformation().entrySet())
                 .toString();
     }
 
