@@ -5,10 +5,21 @@ import silverbars.liveorderboard.order.Order;
 
 import javax.annotation.Nonnull;
 
+import static com.google.common.base.MoreObjects.toStringHelper;
+
+/**
+ * A class for managing live order board state and associated reporting functions.
+ */
 public class LiveOrderBoard {
-    /** a function that translates live order board state into summary information */
+    /**
+     * a function that translates live order board state into summary information
+     */
     @Nonnull
     private final SummaryInformationFunction summaryInformationFunction;
+
+    /**
+     * a placeholder for live order board state
+     */
     @Nonnull
     private final LiveOrderBoardState liveOrderBoardState;
 
@@ -17,7 +28,7 @@ public class LiveOrderBoard {
     }
 
     /**
-     * Allow a summary information function to be replaced with a mock during testing
+     * Dependency injection simplifies unit testing
      */
     @VisibleForTesting
     LiveOrderBoard(@Nonnull LiveOrderBoardState liveOrderBoardState, @Nonnull SummaryInformationFunction summaryInformationFunction) {
@@ -27,6 +38,7 @@ public class LiveOrderBoard {
 
     /**
      * Register an order with the live order board
+     *
      * @param order an order to be registered
      * @return true if an order was not registered before. This is modeled on <code>Set.add()</code> method
      */
@@ -36,6 +48,7 @@ public class LiveOrderBoard {
 
     /**
      * Cancel an order and remove it form the live order board
+     *
      * @param order an order to be cancelled
      * @return true if an order was removed from the live order board. This is modeled on <code>Set.remove()</code> method
      */
@@ -49,5 +62,13 @@ public class LiveOrderBoard {
     @Nonnull
     public LiveOrderBoardSummaryInformation getSummaryInformation() {
         return summaryInformationFunction.apply(liveOrderBoardState);
+    }
+
+    @Nonnull
+    @Override
+    public String toString() {
+        return toStringHelper(this)
+                .addValue(liveOrderBoardState)
+                .toString();
     }
 }

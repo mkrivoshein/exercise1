@@ -6,7 +6,10 @@ import silverbars.liveorderboard.order.Order;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class LiveOrderBoardTest {
     // using field initializers to ensure order of initialisation
@@ -88,5 +91,12 @@ public class LiveOrderBoardTest {
 
         // verify
         assertThat(result, is(sameInstance(summaryInformation)));
+    }
+
+    @Test
+    public void verifyToString() {
+        when(liveOrderBoardState.toString()).thenReturn("DUMMY STATE");
+
+        assertThat(liveOrderBoard.toString(), is("LiveOrderBoard{DUMMY STATE}"));
     }
 }
