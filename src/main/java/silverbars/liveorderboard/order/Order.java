@@ -3,6 +3,7 @@ package silverbars.liveorderboard.order;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+import static com.google.common.base.MoreObjects.toStringHelper;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Order {
@@ -56,6 +57,16 @@ public class Order {
 
     public boolean isSell() {
         return OrderSide.SELL.equals(orderSide);
+    }
+
+    @Override
+    public String toString() {
+        return toStringHelper(this)
+                .add("orderId", orderId)
+                .add("quantity", quantity)
+                .add("price", price)
+                .add("side", orderSide)
+                .toString();
     }
 
     /**

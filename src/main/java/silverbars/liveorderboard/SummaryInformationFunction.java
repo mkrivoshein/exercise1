@@ -22,44 +22,34 @@ class SummaryInformationFunction implements Function<LiveOrderBoardState, LiveOr
     @Override
     public LiveOrderBoardSummaryInformation apply(@Nonnull LiveOrderBoardState state) {
         // split the stream into buy and sell and group data by price
-        Map<Double, LiveOrderBoardSummaryInformation.Entry> buyEntries = buyEntries(state);
-        Map<Double, LiveOrderBoardSummaryInformation.Entry> sellEntries = sellEntries(state);
+        Map<Double, Set<Order>> buyEntries = buyEntries(state);
+        Map<Double, Set<Order>> sellEntries = sellEntries(state);
 
 
         return new LiveOrderBoardSummaryInformation(buyEntries, sellEntries);
     }
 
-    private Map<Double, LiveOrderBoardSummaryInformation.Entry> buyEntries(LiveOrderBoardState state) {
+    private Map<Double, Set<Order>> buyEntries(LiveOrderBoardState state) {
         return generateEntries(state, Order::isBuy, Comparator.reverseOrder());
     }
 
-    private Map<Double, LiveOrderBoardSummaryInformation.Entry> sellEntries(LiveOrderBoardState state) {
+    private Map<Double, Set<Order>> sellEntries(LiveOrderBoardState state) {
         return generateEntries(state, Order::isSell, Comparator.naturalOrder());
     }
 
-    private Map<Double, LiveOrderBoardSummaryInformation.Entry> generateEntries(LiveOrderBoardState state,
-                                                                                Predicate<Order> orderFilter,
-                                                                                Comparator<Double> priceSortingOrder) {
-        Stream<Order> orderStream = state.liveOrders().stream().filter(orderFilter);
+    private Map<Double, Set<Order>> generateEntries(LiveOrderBoardState state,
+                                                    Predicate<Order> orderFilter,
+                                                    Comparator<Double> priceSortingOrder) {
+        SortedMap<Double, Set<Order>> result = new TreeMap<>(priceSortingOrder);
 
-        return summarize(groupByPrice(orderStream), priceSortingOrder);
+        Stream<Order> filteredOrderStream = state.liveOrders().stream().filter(orderFilter);
+
+        result.putAll(groupByPrice(filteredOrderStream));
+
+        return result;
     }
-
 
     private Map<Double, Set<Order>> groupByPrice(@Nonnull Stream<Order> orders) {
         return orders.collect(groupingBy(Order::getPrice, toSet()));
-    }
-
-    private SortedMap<Double, LiveOrderBoardSummaryInformation.Entry> summarize(Map<Double, Set<Order>> orderData,
-                                                                                Comparator<Double> keyOrder) {
-        SortedMap<Double, LiveOrderBoardSummaryInformation.Entry> result = new TreeMap<>(keyOrder);
-
-        orderData.forEach((price, orders) -> {
-            // DoubleStream.sum() attempts to calculate a sum of doubles and retain precision
-            double sum = orders.stream().mapToDouble(Order::getQuantity).sum();
-            result.put(price, new LiveOrderBoardSummaryInformation.Entry(sum, price, orders));
-        });
-
-        return result;
     }
 }

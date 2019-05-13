@@ -2,37 +2,37 @@ package silverbars.liveorderboard;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import silverbars.liveorderboard.order.Order;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
 
 public class LiveOrderBoardSummaryInformation {
+    // assuming that there is no goal of crossing buy and sell orders, it is reasonable to collect them
+    // into two separate buckets as requirements clearly focus on BUY and SELL orders as being grouped separately
     @Nonnull
-    private final Map<Double, Entry> buyEntries;
+    private final Map<Double, Set<Order>> buyEntries;
     @Nonnull
-    private final Map<Double, Entry> sellEntries;
+    private final Map<Double, Set<Order>> sellEntries;
 
     /**
      * Creates a new instance of summary information based on a ordered list of entries
      */
-    LiveOrderBoardSummaryInformation(@Nonnull Map<Double, Entry> buyEntries, @Nonnull Map<Double, Entry> sellEntries) {
+    LiveOrderBoardSummaryInformation(@Nonnull Map<Double, Set<Order>> buyEntries, @Nonnull Map<Double, Set<Order>> sellEntries) {
         // making state of the model immutable to avoid confusion and unexpected behaviour
         this.buyEntries = ImmutableMap.copyOf(buyEntries);
         this.sellEntries = ImmutableMap.copyOf(sellEntries);
     }
 
     /**
-     * Get a read-only list of SELL entries.
+     * Get a read-only list of BUY entries.
      */
     @Nonnull
-    public Map<Double, Entry> buyEntries() {
+    public Map<Double, Set<Order>> buyEntries() {
         return buyEntries;
     }
 
@@ -40,7 +40,7 @@ public class LiveOrderBoardSummaryInformation {
      * Get a read-only list of SELL entries.
      */
     @Nonnull
-    public Map<Double, Entry> sellEntries() {
+    public Map<Double, Set<Order>> sellEntries() {
         return sellEntries;
     }
 
@@ -56,86 +56,49 @@ public class LiveOrderBoardSummaryInformation {
      * returns an ordered array of buy order descriptions; one description per each price entry
      */
     @Nonnull
-    public String[] buyOrdersDescription() {
-        return description(buyEntries);
+    public String[] buyOrdersDescriptions() {
+        return descriptions(buyEntries);
     }
 
     /**
      * returns an ordered array of sell order descriptions; one description per each price entry
      */
     @Nonnull
-    public String[] sellOrdersDescription() {
-        return description(sellEntries);
+    public String[] sellOrdersDescriptions() {
+        return descriptions(sellEntries);
     }
 
-    private String[] description(Map<Double, Entry> entries) {
-        return entries.values().stream()
-                .map(Object::toString)
-                .collect(Collectors.toList())
-                .toArray(new String[0]);
+    private String[] descriptions(Map<Double, Set<Order>> entries) {
+        return entries.entrySet().stream()
+                .map((entry) -> description(entry.getKey(), entry.getValue()))
+                .toArray(String[]::new);
+
     }
 
-    /**
-     * A simple placeholder for summary information entry
-     */
-    public static final class Entry {
-        private final double quantity;
-        private final double price;
-        private final Set<Order> orders;
+    @Nonnull
+    private String description(double price, @Nonnull Set<Order> orders) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getQuantity(orders));
+        sb.append(" kg for ");
 
-        public Entry(double quantity, double price, Order... orders) {
-            this(quantity, price, ImmutableSet.copyOf(orders));
+        // format price as long if it has no fractional part
+        if (price == (long) price) {
+            sb.append((long) price);
+        } else {
+            sb.append(price);
         }
 
-        public Entry(double quantity, double price, Set<Order> orders) {
-            this.quantity = quantity;
-            this.price = price;
-            // ensure it is immutable
-            this.orders = ImmutableSet.copyOf(orders);
-        }
+        sb.append(" GBP"); // £
 
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(quantity);
-            sb.append(" kg for ");
+        sb.append(" // ");
 
-            // format price as long if it has no fractional part
-            if (price == (long) price) {
-                sb.append((long) price);
-            } else {
-                sb.append(price);
-            }
+        sb.append(Joiner.on(" + ").join(orders.stream().map(Order::getOrderId).sorted().collect(Collectors.toList())));
 
-            sb.append(" GBP"); // £
+        return sb.toString();
+    }
 
-            sb.append(" // ");
-
-            sb.append(Joiner.on(" + ").join(orders.stream().map(Order::getOrderId).sorted().collect(Collectors.toList())));
-
-            return sb.toString();
-        }
-
-        public double getQuantity() {
-            return quantity;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Entry entry = (Entry) o;
-            return Double.compare(entry.quantity, quantity) == 0 &&
-                    Double.compare(entry.price, price) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(quantity, price);
-        }
+    private double getQuantity(@Nonnull Set<Order> orders) {
+        // DoubleStream.sum() attempts to calculate a sum of doubles and retain precision
+        return orders.stream().mapToDouble(Order::getQuantity).sum();
     }
 }

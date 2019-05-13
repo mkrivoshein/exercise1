@@ -28,8 +28,8 @@ class LiveOrderBoardSummaryInformationTest {
         LiveOrderBoardSummaryInformation summaryInformation = liveOrderBoard.getSummaryInformation();
 
         assertThat(summaryInformation, is(notNullValue()));
-        assertThat(summaryInformation.buyOrdersDescription(), is(new String[0]));
-        assertThat(summaryInformation.sellOrdersDescription(), is(new String[0]));
+        assertThat(summaryInformation.buyOrdersDescriptions(), is(new String[0]));
+        assertThat(summaryInformation.sellOrdersDescriptions(), is(new String[0]));
     }
 
     @Test
@@ -42,8 +42,8 @@ class LiveOrderBoardSummaryInformationTest {
         LiveOrderBoardSummaryInformation summaryInformation = liveOrderBoard.getSummaryInformation();
 
         assertThat(summaryInformation, is(notNullValue()));
-        assertThat(summaryInformation.buyOrdersDescription(), is(new String[0]));
-        assertThat(summaryInformation.sellOrdersDescription(), is(new String[]{
+        assertThat(summaryInformation.buyOrdersDescriptions(), is(new String[0]));
+        assertThat(summaryInformation.sellOrdersDescriptions(), is(new String[]{
                 "5.5 kg for 306 GBP // order a + order d",
                 "1.5 kg for 307 GBP // order c",
                 "1.2 kg for 310 GBP // order b",
@@ -60,12 +60,12 @@ class LiveOrderBoardSummaryInformationTest {
         LiveOrderBoardSummaryInformation summaryInformation = liveOrderBoard.getSummaryInformation();
 
         assertThat(summaryInformation, is(notNullValue()));
-        assertThat(summaryInformation.buyOrdersDescription(), is(new String[]{
+        assertThat(summaryInformation.buyOrdersDescriptions(), is(new String[]{
                 "2.0 kg for 310 GBP // order f",
                 "1.3 kg for 308 GBP // order g",
                 "2.1 kg for 307 GBP // order e + order h",
         }));
-        assertThat(summaryInformation.sellOrdersDescription(), is(new String[0]));
+        assertThat(summaryInformation.sellOrdersDescriptions(), is(new String[0]));
     }
 
     @Test
@@ -82,12 +82,12 @@ class LiveOrderBoardSummaryInformationTest {
         LiveOrderBoardSummaryInformation summaryInformation = liveOrderBoard.getSummaryInformation();
 
         assertThat(summaryInformation, is(notNullValue()));
-        assertThat(summaryInformation.buyOrdersDescription(), is(new String[]{
+        assertThat(summaryInformation.buyOrdersDescriptions(), is(new String[]{
                 "2.0 kg for 310 GBP // order f",
                 "1.3 kg for 308 GBP // order g",
                 "2.1 kg for 307 GBP // order e + order h",
         }));
-        assertThat(summaryInformation.sellOrdersDescription(), is(new String[]{
+        assertThat(summaryInformation.sellOrdersDescriptions(), is(new String[]{
                 "5.5 kg for 306 GBP // order a + order d",
                 "1.5 kg for 307 GBP // order c",
                 "1.2 kg for 310 GBP // order b",

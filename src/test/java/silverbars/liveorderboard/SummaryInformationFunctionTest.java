@@ -1,6 +1,7 @@
 package silverbars.liveorderboard;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.Test;
 import silverbars.liveorderboard.order.Order;
 import silverbars.liveorderboard.order.OrderSide;
@@ -38,11 +39,8 @@ public class SummaryInformationFunctionTest {
 
         LiveOrderBoardSummaryInformation summaryInformation = function.apply(liveOrderBoardState);
 
-        LiveOrderBoardSummaryInformation.Entry entry1 = new LiveOrderBoardSummaryInformation.Entry(3.5, 306, orderA);
-        LiveOrderBoardSummaryInformation.Entry entry2 = new LiveOrderBoardSummaryInformation.Entry(1.2, 310, orderB);
-
         assertThat(summaryInformation.buyEntries(), is(ImmutableMap.of()));
-        assertThat(summaryInformation.sellEntries(), is(ImmutableMap.of(306d, entry1, 310d, entry2)));
+        assertThat(summaryInformation.sellEntries(), is(ImmutableMap.of(306d, ImmutableSet.of(orderA), 310d, ImmutableSet.of(orderB))));
     }
 
     @Test
@@ -56,11 +54,7 @@ public class SummaryInformationFunctionTest {
 
         LiveOrderBoardSummaryInformation summaryInformation = function.apply(liveOrderBoardState);
 
-        LiveOrderBoardSummaryInformation.Entry entry1 = new LiveOrderBoardSummaryInformation.Entry(1.5, 307, orderE);
-        LiveOrderBoardSummaryInformation.Entry entry2 = new LiveOrderBoardSummaryInformation.Entry(1.3, 308, orderG);
-        LiveOrderBoardSummaryInformation.Entry entry3 = new LiveOrderBoardSummaryInformation.Entry(2.0, 310, orderF);
-
-        assertThat(summaryInformation.buyEntries(), is(ImmutableMap.of(310d, entry3, 308d, entry2, 307d, entry1)));
+        assertThat(summaryInformation.buyEntries(), is(ImmutableMap.of(310d, ImmutableSet.of(orderF), 308d, ImmutableSet.of(orderG), 307d, ImmutableSet.of(orderE))));
         assertThat(summaryInformation.sellEntries(), is(ImmutableMap.of()));
     }
 
@@ -80,16 +74,8 @@ public class SummaryInformationFunctionTest {
 
         LiveOrderBoardSummaryInformation summaryInformation = function.apply(liveOrderBoardState);
 
-        LiveOrderBoardSummaryInformation.Entry entry1 = new LiveOrderBoardSummaryInformation.Entry(5.5, 306, orderA, orderD);
-        LiveOrderBoardSummaryInformation.Entry entry2 = new LiveOrderBoardSummaryInformation.Entry(1.5, 307, orderC);
-        LiveOrderBoardSummaryInformation.Entry entry3 = new LiveOrderBoardSummaryInformation.Entry(1.2, 310, orderB);
-
-        LiveOrderBoardSummaryInformation.Entry entry4 = new LiveOrderBoardSummaryInformation.Entry(2.1, 307, orderE, orderH);
-        LiveOrderBoardSummaryInformation.Entry entry5 = new LiveOrderBoardSummaryInformation.Entry(1.3, 308, orderG);
-        LiveOrderBoardSummaryInformation.Entry entry6 = new LiveOrderBoardSummaryInformation.Entry(2.0, 310, orderF);
-
-        assertThat(summaryInformation.buyEntries(), is(ImmutableMap.of(310d, entry6, 308d, entry5, 307d, entry4)));
-        assertThat(summaryInformation.sellEntries(), is(ImmutableMap.of(306d, entry1, 307d, entry2, 310d, entry3)));
+        assertThat(summaryInformation.buyEntries(), is(ImmutableMap.of(310d, ImmutableSet.of(orderF), 308d, ImmutableSet.of(orderG), 307d, ImmutableSet.of(orderE, orderH))));
+        assertThat(summaryInformation.sellEntries(), is(ImmutableMap.of(306d, ImmutableSet.of(orderA, orderD), 307d, ImmutableSet.of(orderC), 310d, ImmutableSet.of(orderB))));
     }
 
 }
