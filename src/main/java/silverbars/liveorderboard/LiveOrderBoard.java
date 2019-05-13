@@ -12,27 +12,20 @@ import static com.google.common.base.MoreObjects.toStringHelper;
  */
 public class LiveOrderBoard {
     /**
-     * a function that translates live order board state into summary information
-     */
-    @Nonnull
-    private final SummaryInformationFunction summaryInformationFunction;
-
-    /**
      * a placeholder for live order board state
      */
     @Nonnull
     private final LiveOrderBoardState liveOrderBoardState;
 
     public LiveOrderBoard() {
-        this(new LiveOrderBoardState(), new SummaryInformationFunction());
+        this(new LiveOrderBoardState());
     }
 
     /**
      * Dependency injection simplifies unit testing
      */
     @VisibleForTesting
-    LiveOrderBoard(@Nonnull LiveOrderBoardState liveOrderBoardState, @Nonnull SummaryInformationFunction summaryInformationFunction) {
-        this.summaryInformationFunction = summaryInformationFunction;
+    LiveOrderBoard(@Nonnull LiveOrderBoardState liveOrderBoardState) {
         this.liveOrderBoardState = liveOrderBoardState;
     }
 
@@ -61,7 +54,7 @@ public class LiveOrderBoard {
      */
     @Nonnull
     public LiveOrderBoardSummaryInformation getSummaryInformation() {
-        return summaryInformationFunction.apply(liveOrderBoardState);
+        return liveOrderBoardState.getLiveOrderBoardSummaryInformation();
     }
 
     @Nonnull

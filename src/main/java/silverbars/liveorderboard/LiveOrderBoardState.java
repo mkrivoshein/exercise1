@@ -4,9 +4,17 @@ import com.google.common.collect.ImmutableSet;
 import silverbars.liveorderboard.order.Order;
 
 import javax.annotation.Nonnull;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * A simple mutable container for live order board state.
@@ -41,6 +49,34 @@ public class LiveOrderBoardState {
     @Nonnull
     public Set<Order> liveOrders() {
         return ImmutableSet.copyOf(liveOrders);
+    }
+
+    @Nonnull
+    public LiveOrderBoardSummaryInformation getLiveOrderBoardSummaryInformation() {
+        return new LiveOrderBoardSummaryInformation(buyEntries(), sellEntries());
+    }
+
+    private Map<Double, Set<Order>> buyEntries() {
+        return generateEntries(Order::isBuy, Comparator.reverseOrder());
+    }
+
+    private Map<Double, Set<Order>> sellEntries() {
+        return generateEntries(Order::isSell, Comparator.naturalOrder());
+    }
+
+    private Map<Double, Set<Order>> generateEntries(Predicate<Order> orderFilter,
+                                                    Comparator<Double> priceSortingOrder) {
+        SortedMap<Double, Set<Order>> result = new TreeMap<>(priceSortingOrder);
+
+        Stream<Order> filteredOrderStream = liveOrders.stream().filter(orderFilter);
+
+        result.putAll(groupByPrice(filteredOrderStream));
+
+        return result;
+    }
+
+    private Map<Double, Set<Order>> groupByPrice(@Nonnull Stream<Order> orders) {
+        return orders.collect(groupingBy(Order::getPrice, toSet()));
     }
 
     @Override

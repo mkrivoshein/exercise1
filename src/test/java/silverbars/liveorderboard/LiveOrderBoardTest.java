@@ -14,8 +14,7 @@ import static org.mockito.Mockito.when;
 public class LiveOrderBoardTest {
     // using field initializers to ensure order of initialisation
     private final LiveOrderBoardState liveOrderBoardState = mock(LiveOrderBoardState.class);
-    private final SummaryInformationFunction summaryInformationFunction = mock(SummaryInformationFunction.class);
-    private final LiveOrderBoard liveOrderBoard = new LiveOrderBoard(liveOrderBoardState, summaryInformationFunction);
+    private final LiveOrderBoard liveOrderBoard = new LiveOrderBoard(liveOrderBoardState);
 
     @Test
     public void registerOrderCallsToLiveOrderBoardState() {
@@ -43,7 +42,7 @@ public class LiveOrderBoardTest {
         verify(liveOrderBoardState).registerOrder(mockOrder2);
         verify(liveOrderBoardState).registerOrder(mockOrder3);
 
-        verifyNoMoreInteractions(liveOrderBoardState, summaryInformationFunction);
+        verifyNoMoreInteractions(liveOrderBoardState);
     }
 
     @Test
@@ -72,19 +71,19 @@ public class LiveOrderBoardTest {
         verify(liveOrderBoardState).cancelOrder(mockOrder2);
         verify(liveOrderBoardState).cancelOrder(mockOrder3);
 
-        verifyNoMoreInteractions(liveOrderBoardState, summaryInformationFunction);
+        verifyNoMoreInteractions(liveOrderBoardState);
     }
 
     /**
-     * Verify that live order board is using summary information function to generate summary information
+     * Verify that live order board is using delegating call to live order board state instance to generate summary information
      */
     @Test
     public void summaryInformation() {
         // prepare
         LiveOrderBoardSummaryInformation summaryInformation = mock(LiveOrderBoardSummaryInformation.class);
-        when(summaryInformationFunction.apply(liveOrderBoardState)).thenReturn(summaryInformation);
+        when(liveOrderBoardState.getLiveOrderBoardSummaryInformation()).thenReturn(summaryInformation);
 
-        LiveOrderBoard liveOrderBoard = new LiveOrderBoard(liveOrderBoardState, summaryInformationFunction);
+        LiveOrderBoard liveOrderBoard = new LiveOrderBoard(liveOrderBoardState);
 
         // execute
         LiveOrderBoardSummaryInformation result = liveOrderBoard.getSummaryInformation();
